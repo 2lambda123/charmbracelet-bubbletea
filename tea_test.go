@@ -6,6 +6,8 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"go.uber.org/goleak"
 )
 
 type incrementMsg struct{}
@@ -197,4 +199,8 @@ func TestTeaNoRun(t *testing.T) {
 
 	m := &testModel{}
 	NewProgram(m, WithInput(&in), WithOutput(&buf))
+}
+
+func TestMain(m *testing.M) {
+	goleak.VerifyTestMain(m)
 }

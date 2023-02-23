@@ -50,17 +50,24 @@ type standardRenderer struct {
 
 	// lines explicitly set not to render
 	ignoreLines map[int]struct{}
+
+	// background color when renderer is created
+	defaultBackgroundColor termenv.Color
+	// flag if background color has been changed
+	backgroundColorChanged bool
 }
 
 // newRenderer creates a new renderer. Normally you'll want to initialize it
 // with os.Stdout as the first argument.
 func newRenderer(out *termenv.Output, useANSICompressor bool) renderer {
 	r := &standardRenderer{
-		out:                out,
-		mtx:                &sync.Mutex{},
-		framerate:          defaultFramerate,
-		useANSICompressor:  useANSICompressor,
-		queuedMessageLines: []string{},
+		out:                    out,
+		mtx:                    &sync.Mutex{},
+		framerate:              defaultFramerate,
+		useANSICompressor:      useANSICompressor,
+		queuedMessageLines:     []string{},
+		defaultBackgroundColor: out.BackgroundColor(),
+		backgroundColorChanged: false,
 	}
 	if r.useANSICompressor {
 		r.out = termenv.NewOutput(&compressor.Writer{Forward: out})
@@ -379,6 +386,23 @@ func (r *standardRenderer) disableMouseAllMotion() {
 	defer r.mtx.Unlock()
 
 	r.out.DisableMouseAllMotion()
+}
+
+func (r *standardRenderer) setBackgroundColor(c termenv.Color) {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+
+	r.backgroundColorChanged = true
+	r.out.SetBackgroundColor(c)
+}
+
+func (r *standardRenderer) resetBackgroundColor() {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+
+	if r.backgroundColorChanged && r.defaultBackgroundColor.Sequence(true) != "" {
+		r.out.SetBackgroundColor(r.defaultBackgroundColor)
+	}
 }
 
 // setIgnoredLines specifies lines not to be touched by the standard Bubble Tea

@@ -35,6 +35,7 @@ func (p *Program) restoreTerminalState() error {
 		p.renderer.showCursor()
 		p.renderer.disableMouseCellMotion()
 		p.renderer.disableMouseAllMotion()
+		p.renderer.resetBackgroundColor()
 
 		if p.renderer.altScreen() {
 			p.renderer.exitAltScreen()

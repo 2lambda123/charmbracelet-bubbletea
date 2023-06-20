@@ -108,7 +108,7 @@ func (r *standardRenderer) stop() {
 	r.out.ClearLine()
 
 	if r.useANSICompressor {
-		if w, ok := r.out.TTY().(io.WriteCloser); ok {
+		if w, ok := r.out.Writer().(io.WriteCloser); ok {
 			_ = w.Close()
 		}
 	}

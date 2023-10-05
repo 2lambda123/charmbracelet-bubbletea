@@ -4,10 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/charmbracelet/log"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -73,7 +74,7 @@ func newModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	log.Println("Starting work...")
+	log.Print("Starting work...\n")
 	return tea.Batch(
 		m.spinner.Tick,
 		runPretendProcess,

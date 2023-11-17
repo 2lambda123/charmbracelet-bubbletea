@@ -20,6 +20,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"syscall"
+	"time"
 
 	"github.com/containerd/console"
 	isatty "github.com/mattn/go-isatty"
@@ -554,6 +555,18 @@ func (p *Program) Run() (Model, error) {
 	p.shutdown(killed)
 
 	return model, err
+}
+
+// FrameRate will set the renderer frame rate
+// if not set, default (1/60s) will be used
+func (p *Program) FrameRate(d time.Duration) error {
+	if p.renderer != nil {
+		return errors.New("frame rate already being set")
+	}
+
+	p.renderer = newRenderer(p.output, p.startupOptions.has(withANSICompressor))
+	p.renderer.frameRate(d)
+	return nil
 }
 
 // StartReturningModel initializes the program and runs its event loops,

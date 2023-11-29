@@ -167,6 +167,26 @@ func WithANSICompressor() ProgramOption {
 	}
 }
 
+// WithoutJobControl disables support for suspending the process when
+// Ctrl+Z is pressed. By default, Ctrl+Z causes SIGTSTP to be emitted
+// to the current process group, to support job control in the
+// surrounding unix shell.
+func WithoutJobControl() ProgramOption {
+	return func(p *Program) {
+		p.disableSuspendOnCtrlZ = true
+	}
+}
+
+// WithoutGoStandardAbort disables support for sending SIGQUIT
+// to the process (and generating a goroutine dump) when
+// Ctrl+\ is pressed. By default, Ctrl+\ causes SIGQUIT to be
+// emitted, this is a standard Go feature.
+func WithoutGoStandardAbort() ProgramOption {
+	return func(p *Program) {
+		p.disableGoStandardAbort = true
+  }
+}
+
 // WithFilter supplies an event filter that will be invoked before Bubble Tea
 // processes a tea.Msg. The event filter can return any tea.Msg which will then
 // get handled by Bubble Tea instead of the original event. If the event filter
